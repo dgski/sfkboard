@@ -1,0 +1,1851 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<!-- Get Jquery library -->
+		<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+  		<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+  		<script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+  		<link rel="stylesheet" href="https://jqueryui.com/resources/demos/style.css">
+
+		<!-- Set Title -->
+		<title>
+			Single File Kanban
+		</title>
+
+		<!-- Set Styles -->
+		<style>
+			body 
+			{
+			 	font-family: Arial;
+			 	margin: 0;
+			 	text-align: center;
+			 }
+			.ht
+			{
+				font-size: 18px;
+				margin:5px;
+				padding-top: 0px;
+				width: 200px;
+				font-weight: bold;
+				height: 20px;
+				text-transform: uppercase;
+				float: left;
+			}
+			.container-mas
+			{
+				float:left;
+				clear: right;
+				margin:20px;
+				margin-right: 0px;
+				text-align: left;
+				width: 295px;
+			}
+			.container
+			{
+				width: 295px;
+				float:left;
+				clear: right;
+			}
+			.sortable 
+			{
+				list-style-type: none;
+				margin:0; 
+				padding:0px;
+				min-height:20px;
+			}
+			.sortable li 
+			{ 
+				margin: 5px 5px 5px 5px;
+				padding: 0.4em;
+				padding-left: 0.8em;
+				font-size: 14px;
+				min-height: 16px; 
+				overflow-wrap: break-word;
+			}
+			.card
+			{
+				background-color:white;
+				color: black;
+			}
+			#top 
+			{
+				position:sticky;
+				top: 0px;
+				height: 36px;
+				background-color: black;
+				color: grey;
+				text-align: left;
+				font-family: Arial;
+				text-transform: uppercase;
+				font-style: italic;
+			}
+			#top2 
+			{
+				position: absolute;
+				top: 0px;
+				color: white;
+				height: 26px;
+				text-align: center;
+				vertical-align: middle;
+				visibility: hidden;
+				background-color: #404040;
+				width: 100%;
+				padding-top: 10px;
+			}
+			.input_new
+			{
+				padding: 5px; 
+				height: 17px; 
+				width: 280px;  
+				margin: 5px; 
+				border: 0px; 
+				color: white; 
+				background-color:inherit; 
+				outline: none; 
+				font-size: 14px; 
+				overflow: hidden;
+			}
+			.input_card
+			{
+				padding: 0px; 
+				height: 17px; 
+				width: 265px;  
+				margin: 0px; 
+				border: 0px; 
+				color: black; 
+				background-color:inherit; 
+				outline: none; 
+				font-size: 14px;
+				font-family: arial;
+			}
+			.input_heading
+			{
+				padding: 0px; 
+				height: 17px; 
+				width: 245px;  
+				margin: 0px; 
+				border: 0px; 
+				color: black; 
+				background-color:inherit; 
+				outline: none; 
+				font-size: 14px;
+			}
+			#title-string
+			{
+				padding: 0px; 
+				height: 17px; 
+				width: 245px;  
+				margin-top: 10px;
+				margin-left: 10px; 
+				border: 0px; 
+				color: white; 
+				background-color:inherit; 
+				outline: none; 
+				font-size: 14px;
+				display: none;
+				float: left;
+			}
+			.input_new::-webkit-input-placeholder 
+			{
+			color: white !important;
+			}
+
+			.color-changer:focus::-webkit-input-placeholder
+			{
+				color:transparent; 
+			}
+			.addnew
+			{
+				padding: 5px;
+				padding-left: 0.8em;
+				margin: 5px;
+				min-height: 16px;
+				font-size: 14px;
+			}
+			[hidden]
+			{ 
+				display: none !important; 
+			}
+			.color-changer
+			{
+				padding: 1px;
+				outline: 0;
+				-webkit-box-shadow: none;
+  				box-shadow: none;
+  				float: right;
+  				border: 0;
+			}
+			.color-master
+			{
+				border-style: solid;
+				border-width: 2px;
+			}
+			#board-name
+			{
+				color: white; 
+				float: left;
+				margin-top: 10px;
+				margin-left:10px;
+			}
+			#logo
+			{
+				float: left; 
+				padding-left: 5px;
+				margin-top: 10px;
+				color: #404040;
+
+			}
+			.add-button
+			{
+				float: right;
+				margin-right: 7px;
+				background-color: #404040; 
+				border: none; 
+				outline: none; 
+				color: white;
+				-webkit-border-radius: 0px;
+				-moz-border-radius: 0px;
+				height: 20px;
+				position: relative;
+  				top: 50%;
+  				transform: translateY(-50%);
+			}
+			.board-selector
+			{
+				height: 20px;
+				float: right;				
+				background-color: #404040; 
+				border: none;
+				width: 70px;
+				color: white;
+				padding: 3px;
+				padding-top: 2px;
+				padding-left: 6px;
+				-webkit-border-radius: 0px;
+				-moz-border-radius: 0px;
+				-webkit-appearance: none;
+				-moz-appearance: none;
+				appearance: none;
+				position: relative;
+  				top: 50%;
+  				transform: translateY(-50%);
+  				margin-right: 10px;
+			}
+			@-moz-document url-prefix() 
+			{
+  				.board-selector 
+  				{
+    				width: auto;
+    				padding-top: 0px;
+  				}
+
+  				optgroup
+  				{
+  					color: black;
+  				}
+
+  				optgroup option
+  				{
+  					color: white;
+  				}
+			}
+			input[type="color"]::-webkit-color-swatch-wrapper 
+			{
+				padding: 0;
+			}
+			input[type="color"]::-webkit-color-swatch
+			{
+				border: none;
+			}
+			.container
+			{
+			    display: inline-block;
+			    cursor: pointer;
+			}
+			#question
+			{
+				height: 100%;
+				width: 100%;
+				text-align: center; 
+				vertical-align: middle;
+				position: absolute;
+			    top: 0px;
+			    background-color: rgba(0, 0, 0, 0.85);
+			    margin: auto;
+			}
+			.box
+			{
+				background-color: white;
+				width: 280px;
+				border-color: black;
+				border-width: 1px;
+				border-style: solid;
+				margin: 0 auto;
+				position: relative;
+  				top: 30%;
+  				transform: translateY(-50%);
+  				padding: 40px;
+  				padding-bottom: 50px;
+  				content: " ";
+  				 display: block; 
+   				clear: both;
+			}
+
+
+		</style>
+
+
+
+		<!-- Set Scripts -->
+		<script>
+
+/////////////////////////////////////////////////////////////////////////////////////
+//GLOBAL VARIABLES
+/////////////////////////////////////////////////////////////////////////////////////
+
+var version = 1.0; 
+var board_name;
+var board_list;
+var editing_text = false;
+
+var column_selected = 10; //no column selected
+var list_item_selected = 1; //no list item selected
+var prevent_event = false;
+var new_keyboard = false;
+var just_started_editing = false;
+var changing_color = false;
+var layer = 1;
+var one_focus = true;
+var deleting =  false;
+
+var cancel_this = 9; //199 //247
+var cancel_this_2 = 105;
+var edit_this = 69;
+var new_this = 78;
+var delete_this = 68;
+var menu_this = 66;
+
+/////////////////////////////////////////////////////////////////////////////////////
+//END OF GLOBAL VARIABLES
+/////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////
+//KEYBOARD SHORTCUT FUNCTIONALITY
+/////////////////////////////////////////////////////////////////////////////////////
+
+//Events
+//1. UI Functions
+//2. Layer 1
+//3. Layer 2
+//4. Layer 3
+
+
+function display_numbers()
+{
+	var columns = JSON.parse(localStorage.getItem(board_name + "_col"));	
+	var size = columns.length;
+
+	//Give Each column a number
+	for(i in columns)
+	{
+		var col_id = (parseInt(i) + 1);
+		$("#" + col_id + "_mas").find(".ht").prepend('(' + col_id + ') ');
+	}
+}
+
+function hide_numbers()
+{
+	var columns = JSON.parse(localStorage.getItem(board_name + "_col"));	
+	for(i in columns)
+		{
+			var col_id = (parseInt(i) + 1);
+			var old_head = $("#" + col_id + "_mas").find(".ht").text();
+
+			var new_head = old_head.slice(4);
+
+			$("#" + col_id + "_mas").find(".ht").text(new_head)
+		}
+}
+
+function display_letters(column_selected)
+{
+	var columns = JSON.parse(localStorage.getItem(board_name + "_col"));	
+	var list = $("#" + columns[column_selected - 1] + " li");
+	counter = 97;
+	list.each(function(){
+	$(this).prepend('<b style="padding-right: 5px">' + String.fromCharCode(counter++) +'</b> ');
+	});
+}
+
+function hide_letters(column_selected)
+{
+	var columns = JSON.parse(localStorage.getItem(board_name + "_col"));	
+	list = $("#" + columns[column_selected - 1] + " li");
+	counter = 97;
+	list.each(function(){
+	var with_number = $(this).text();
+	var numberless = with_number.slice(2);
+	$(this).text(numberless);		
+	});
+}
+
+function hilight_col(column_pos)
+{
+	//Hilight Column
+	$("#" + column_pos + "_mas").css("background-color", "black");
+	$("#" + column_pos + "_mas").css("color", "white");
+}
+
+function un_hilight_col(column_selected)
+{
+	$("#" + column_selected + "_mas").css("background-color", "white");
+	$("#" + column_selected + "_mas").css("color", "black");
+}
+
+
+$(document).on('keypress', function(e) {
+	if ((e.which == cancel_this || e.which == cancel_this_2) && e.ctrlKey)
+	{
+	}
+});
+
+//Layer 3
+$(document).on('keypress', function(e) {
+
+	if(layer != 3)
+		return;
+
+	var columns = JSON.parse(localStorage.getItem(board_name + "_col"));
+
+	if(editing_text && (e.which == cancel_this || e.which == cancel_this_2) && e.ctrlKey)
+	{
+		$(':focus').blur();
+		layer = 1;
+	}
+
+
+	if(editing_text == true || column_selected == 10 || list_item_selected == 1 || e.which == new_this)
+		return;
+
+	var current_card = $("#" + column_selected + "_" + list_item_selected);
+
+	var clean_up = false;
+
+	//Change selection
+	if(list_item_selected != 1 && e.which > 96 && e.which < 123)
+	{
+		current_card.css("background-color", "white");
+		current_card.css("color", "black");
+
+		list_item_selected = String.fromCharCode(e.which);
+
+		$('#' + column_selected + '_' + list_item_selected).css("background-color", "black");
+		$('#' + column_selected + '_' + list_item_selected).css("color", "white");
+
+		return;
+	}
+
+
+
+	//Cancel selections
+	if ((e.which == cancel_this || e.which == cancel_this_2) && e.ctrlKey)
+	{
+		hide_numbers();
+		hide_letters(column_selected);
+		un_hilight_col(column_selected);
+
+		current_card.css("background-color", "white");
+		current_card.css("color", "black");
+
+
+		column_selected = 10;
+		list_item_selected = 1;
+		prevent_event = false;
+		new_keyboard = false;
+
+		layer = 1;
+
+		return;
+	}
+
+
+	//Move to different column
+	if (parseInt(String.fromCharCode(e.which)) <= columns.length)
+	{
+
+		var with_number = current_card.text();
+		var numberless = with_number.slice(1);
+
+		current_card.text(numberless);
+		current_card.css("background-color", "white");
+		current_card.css("color", "black");
+
+		//Delete current card
+		$("#" + column_selected + "_" + list_item_selected).remove();
+
+		var to_column_loc = parseInt(String.fromCharCode(e.which)) - 1;
+		var to_column = columns[to_column_loc];
+
+		//Append to new column
+		$('#' + to_column).append(current_card);
+		to_column_loc++;
+
+		update_col(to_column);
+
+		$("#" + column_selected + "_mas").css("background-color", "white");
+		$("#" + column_selected + "_mas").css("color", "black");
+		$("#" + 4 + "_mas").css("background-color", "white");
+		$("#" + 4 + "_mas").css("color", "black");
+
+		layer = 1;
+
+		clean_up = true;
+
+	}
+
+	//Delete
+	else if (e.which == delete_this)
+	{
+		var current_card = $("#" + column_selected + "_" + list_item_selected);
+		current_card.remove();
+		$("#" + column_selected + "_mas").css("background-color", "white");
+		$("#" + column_selected + "_mas").css("color", "black");
+
+		layer = 1;
+
+		clean_up = true;
+		
+	}
+
+	//Edit item
+	else if(e.which == edit_this)
+	{
+
+		hide_letters(column_selected);
+		
+
+		hide_numbers();
+
+		var current_card = $("#" + column_selected + "_" + list_item_selected);
+
+		if(editing_text == true)
+			return
+
+		editing_text = true;
+
+		var item_text = current_card.text();
+
+		//Work around for safari
+		if (item_text[0] = ' ')
+			item_text = item_text.slice(1);
+
+		var height = parseInt(current_card.css("height")) + 30;
+
+
+		current_card.html('<textarea style="padding: 0px; resize: none" class="input_card" type="text" id="new_text2" value="" placeholder="">')
+
+		current_card.find(".input_card").val(item_text);
+		current_card.find(".input_card").css("height", height);
+		current_card.find(".input_card").focus();
+		current_card.find(".input_card").select();
+
+
+		$("#" + column_selected + "_mas").css("background-color", "white");
+		$("#" + column_selected + "_mas").css("color", "black");
+
+		current_card.css("background-color", "white");
+		current_card.css("color", "black");
+
+		//Reset Listeners
+		column_selected = 10;
+		list_item_selected = 1;
+		prevent_event = true;
+
+		layer = 1;
+
+		return false;
+	}
+
+	if(clean_up)
+	{
+	//Hide UI
+	hide_letters(column_selected);
+	hide_numbers();
+	un_hilight_col(column_selected);
+
+	//Update column in memory
+	update_col(columns[column_selected - 1]);
+
+	just_started_editing = true;
+
+	//Reset Listeners
+	column_selected = 10;
+	list_item_selected = 1;
+	prevent_event = true;
+	}
+
+	refresh_position_ids();
+
+});
+
+//Layer 2
+$(document).on('keypress', function(e) {
+
+	if(layer != 2)
+		return;
+
+	if(editing_text && (e.which == cancel_this || e.which == cancel_this_2) && e.ctrlKey)
+	{
+		$(':focus').blur();
+		layer = 1;
+	}
+
+	if(editing_text == true || column_selected == 10 || list_item_selected != 1)
+		return;
+
+	var columns = JSON.parse(localStorage.getItem(board_name + "_col"));
+
+
+	if((e.which == cancel_this || e.which == cancel_this_2) && e.ctrlKey)
+	{
+		un_hilight_col(column_selected);
+		hide_letters(column_selected);
+		hide_numbers();
+
+		column_selected = 10;
+
+		refresh_position_ids();
+
+		layer = 1;
+
+		return;
+
+
+	}
+
+
+
+
+
+	if(column_selected != 10 && e.which > 48 && e.which < 58)
+	{
+		un_hilight_col(column_selected);
+		hide_letters(column_selected);
+		hide_numbers();
+
+		var size = columns.length;
+
+		if(!(parseInt(String.fromCharCode(e.which)) <= size))
+			return;
+
+		column_selected = String.fromCharCode(e.which);
+
+		hilight_col(column_selected);
+		display_numbers();
+		display_letters(column_selected);
+		
+		column_selected = parseInt(column_selected);
+	}
+
+	//Edit column name
+	else if(e.which == edit_this)
+	{
+		var heading = $("#" + column_selected + "_mas").find('.ht');
+
+		hide_letters(column_selected);
+		hide_numbers();
+		un_hilight_col(column_selected);
+		heading.click();
+		column_selected = 10;
+		list_item_selected = 1;
+
+		refresh_position_ids();
+
+		layer = 1;
+
+		return false;
+
+	}
+
+	//New List Item
+	if(e.which == new_this)
+	{
+		$("#" + column_selected + "_mas").find(".input_new").focus();		
+		
+		un_hilight_col(column_selected);
+		hide_numbers();
+		hide_letters(column_selected);
+		
+		column_selected = 10;
+		list_item_selected = 1;
+		new_keyboard = true;
+
+		refresh_position_ids();
+
+		layer = 1;
+
+		return false;
+
+	}
+
+	//Delete column
+	else if(e.which == delete_this)
+	{
+		del_column2(columns[column_selected - 1]);
+
+		hide_numbers();
+		hide_letters(column_selected);
+
+		column_selected = 10;
+		list_item_selected = 1;
+		new_keyboard = true;
+
+		layer = 1;
+	}
+
+	//Select List Item
+	else if ( e.which  > 96 && e.which < 123)
+	{
+		$('#' + column_selected + "_" + String.fromCharCode(e.which)).css("background-color", "black");
+		$('#' + column_selected + "_" + String.fromCharCode(e.which)).css("color", "white");
+		list_item_selected = String.fromCharCode(e.which);
+
+		layer = 3;
+
+	}
+
+	refresh_position_ids();
+});
+
+
+//Layer 1
+$(document).on('keypress', function(e) {
+
+	if(layer != 1)
+		return;
+
+	if(editing_text && (e.which == cancel_this || e.which == cancel_this_2) && e.ctrlKey)
+	{
+		if($(':focus').attr("class") != "input_new")
+			return;
+
+		$(':focus').val("");
+		$(':focus').blur();
+		layer = 1;
+	}
+
+	if(editing_text == true || prevent_event == true)
+	{
+		prevent_event = false;
+		return;
+	}
+
+	if( e.which == new_this)
+	{
+		add_new_column();
+		refresh_position_ids();
+		return;
+	}
+
+	if (e.which == edit_this)
+	{
+		$("#board-name").click();
+		return false;
+	}
+
+	else
+	{
+		var columns = JSON.parse(localStorage.getItem(board_name + "_col"));
+		var size;
+
+		if (columns == null)
+			size = 0;
+		else
+			size = columns.length;
+
+		if(!(parseInt(String.fromCharCode(e.which)) <= size))
+			return;
+
+		column_selected = String.fromCharCode(e.which);
+
+		hilight_col(column_selected);
+		display_numbers();
+		display_letters(column_selected);
+		
+		column_selected = parseInt(column_selected);
+	}
+
+	layer = 2;
+
+});
+
+$(document).on("keypress", function(e) {
+
+	if(e.which == menu_this && editing_text == false)
+	{
+
+		var x = document.createEvent('MouseEvents');
+		x.initMouseEvent("mousedown", true, true, window);
+
+		document.getElementsByClassName('board-selector')[0].dispatchEvent(x);
+
+	}
+
+
+
+})
+
+
+/////////////////////////////////////////////////////////////////////////////////////
+// END
+/////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////
+// UPDATE AND HOOK FUNCTIONS
+/////////////////////////////////////////////////////////////////////////////////////
+
+
+//Updates a Colomn in localStorage
+function update_col(list_id)
+{
+	var id = board_name + "_" + list_id;
+	var html_list = $("#" + list_id)[0].getElementsByTagName("li");
+	var storage_list = [];
+
+  	for(var i = 0; i < html_list.length; ++i)
+  		storage_list.push(html_list[i].innerHTML);
+
+  	localStorage.setItem(id, JSON.stringify(storage_list));
+}
+
+//Adds a New Column
+ function add_new_column()
+ {
+
+ 	//Get current columns
+ 	var columns = JSON.parse(localStorage.getItem(board_name + "_col"));
+
+ 	var new_id = 0;
+
+ 	//If no columns exist
+ 	if(columns == null)
+ 	{
+ 		columns = [];
+ 	}
+ 	else
+ 	{
+ 		//Lowest possible value 
+ 	for(var i = 0; i < 9; i++)
+ 	{
+ 		if($.inArray(new_id, columns) != -1)
+ 		new_id++;
+ 	}
+
+ 	if(new_id == null)
+ 		new_id = 0;
+
+ 	if(columns.length == 9)
+ 		return;
+ 	}
+
+
+ 	
+
+ 	columns.push(new_id);
+
+ 	var color = 'lightgrey';
+ 	var text_box_color = 'grey';
+
+ 	var position;
+ 	var header = "NEW";
+	
+	draw_col((columns.length + 1), header, color, text_box_color, new_id)
+
+	//Add to internal storage
+	localStorage.setItem(board_name + "_col", JSON.stringify(columns));
+	localStorage.setItem(board_name + "_" + new_id + "_attr", '["NEW", "lightgrey", "grey"]');
+
+    refresh_hooks();
+    refresh_position_ids();
+}
+
+//Deletes a column
+function del_column(event, ui)
+{
+	var update_id = ui.helper.find("ul").attr("id");
+    var columns = JSON.parse(localStorage.getItem(board_name + "_col"));
+   	var index = columns.indexOf(parseInt(update_id));
+
+    if(index > -1)
+    	columns.splice(index, 1);
+
+    ui.helper.remove();
+
+	localStorage.removeItem(board_name + '_' + update_id)
+    localStorage.removeItem(board_name + '_' + update_id + '_attr')
+    localStorage.setItem(board_name + '_col', JSON.stringify(columns));
+
+    $("#top2").css("background-color","#404040");
+
+    refresh_position_ids();
+}
+
+
+//Deletes a column
+function del_column2(column_id)
+{
+	var update_id = column_id;
+    var columns = JSON.parse(localStorage.getItem(board_name + "_col"));
+   	var index = columns.indexOf(column_id);
+
+    if(index > -1)
+    	columns.splice(index, 1);
+
+    $('#' + (index + 1) + "_mas").remove();
+
+	localStorage.removeItem(board_name + '_' + update_id)
+    localStorage.removeItem(board_name + '_' + update_id + '_attr')
+    localStorage.setItem(board_name + '_col', JSON.stringify(columns));
+
+
+    refresh_position_ids();
+}
+
+
+function save_new_col_order()
+{
+
+	var new_order = [];
+	var html_list_col = $(".sort-master")[0].getElementsByTagName("ul");
+
+	for(var i = 0; i < html_list_col.length; i++)
+	{
+		new_order.push(parseInt(html_list_col[i].id));
+	}
+
+	localStorage.setItem(board_name + '_col', JSON.stringify(new_order));
+}
+
+
+
+function change_col_attr(input_id,input_name, input_color, input_bg)
+{
+	var attr = JSON.parse(localStorage.getItem(board_name + '_' + input_id + "_attr"));
+
+	if(input_name == 0)
+		input_name = attr[0];
+
+	if(input_color == 0)
+		input_color = attr[1];
+
+	if(input_bg == 0)
+		input_bg = attr[2];
+
+	//Column Name
+	attr[0] = input_name;
+
+	//Column Color
+	attr[1] = input_color;
+
+	//Column Background color
+	attr[2] = input_bg;
+
+
+	localStorage.setItem(board_name + '_' + input_id + "_attr", JSON.stringify(attr));
+
+
+
+}
+
+function draw_col(position, header, color, accent_color, list_id) {
+
+
+	$('.sort-master').append('<div id ="' + position +'_mas"class="container-mas"><div class="ht">'+ header +'</div><input class="color-changer" type="color" style="width: 20px; height: 20px; border-width: 2px; display: none" placeholder="black" value="' + color + '"><div class="container" style="background-color: ' + color +';"><ul id="' + list_id +'" class="sortable connectedSortable"></ul><div class="addnew" style="padding: 0px; background-color:'+ accent_color +';"><input style="padding: 0px;" class="input_new" type="text" id="new_text" value="" placeholder=" + New Item"/></div></div></div>');
+
+}
+
+// Adds dynamically created DOM objects to event listeners
+function refresh_hooks()
+{
+		
+//Color changer event listener
+$(".color-changer").on("change", function(event) {
+
+
+var p = $(event.target).parent();
+
+if (p) {
+
+    p.find(".addnew").css("background-color", "#" + LightenDarkenColor(event.target.value, -60));
+    p.find(".container").css("background-color", event.target.value);
+
+	$(event.target).css("background-color",event.target.value )
+	$(event.target).attr("value", event.target.value )
+	//$(event.target).css("display", "none");
+
+
+    change_col_attr(p.find(".container").find("ul").attr("id"),0,event.target.value,LightenDarkenColor(event.target.value, -60))
+
+    changing_color = false;
+  }
+
+}
+);
+
+
+//Refresh sortable lists
+$(".sortable").sortable({
+connectWith: ".connectedSortable",
+receive: function( event, ui ) {
+  	$(this)
+  },
+ opacity: 0.7,
+sort:		
+function() {
+	$( "#trash" ).css("visibility", "visible");
+	$( "#top2" ).css("visibility", "visible");
+},
+stop:		
+function() {
+
+	column_list = JSON.parse(localStorage.getItem(board_name + "_col"));
+
+	for(i in column_list)
+	{
+		update_col(column_list[i]);
+	}
+
+	$( "#trash" ).css("visibility", "hidden");
+	$( "#top2" ).css("visibility", "hidden");
+
+	refresh_position_ids();
+
+}
+});
+
+ //Refresh sortable columns
+$( ".sort-master" ).sortable({
+receive: function( event, ui ) {
+  	$(this)
+ },
+opacity: 0.5,
+sort:		
+function() {
+	$( "#trash" ).css("visibility", "visible");
+	$( "#top2" ).css("visibility", "visible");
+},
+stop:		
+function() {
+	save_new_col_order();
+	$( "#trash" ).css("visibility", "hidden");
+	$( "#top2" ).css("visibility", "hidden");
+
+	refresh_position_ids();
+
+}
+});
+
+//Deals with events related to trashbin
+$('#top2').droppable({
+	tolerance: "pointer",
+	accept: 'li, div',
+	drop: function(event, ui) {
+
+	if((event.target.localName) == "li")
+	{
+	    var update_id = ui.helper.parent().attr("id");
+	    ui.helper.remove();
+	    update_col(update_id);
+	    $("#top2").css("background-color","red");
+	}
+	else
+	{
+
+		var update_id = ui.helper.find("ul").attr("id");
+	    var columns = JSON.parse(localStorage.getItem(board_name + "_col"));
+	   	var index = columns.indexOf(parseInt(update_id));
+
+	    if(index > -1)
+	    	columns.splice(index, 1);
+
+	    ui.helper.remove();
+
+		localStorage.removeItem(board_name + "_" + update_id)
+	    localStorage.removeItem(board_name + '_' + update_id + '_attr')
+	    localStorage.setItem(board_name + '_col', JSON.stringify(columns));
+
+	    $("#top2").css("background-color","#404040");
+	}
+
+	},
+	over: function(event, ui) {
+	$("#top2").css("background-color","red");
+	},
+
+	out: function(event, ui) {
+	$("#top2").css("background-color","#404040");
+	}
+});
+
+}
+
+function refresh_position_ids()
+{
+	var containers = $(".sort-master").find(".container-mas");
+
+	counter = 1;
+	containers.each(function() {
+
+
+		$(this).attr("id", counter + "_mas");
+
+		var list_items = $(this).find("li");
+
+		alpha_count = 97;
+		list_items.each(function(){
+
+			$(this).attr("id", counter + "_" + String.fromCharCode(alpha_count));
+			alpha_count++;
+		})
+
+		counter++;
+
+	});
+}
+
+
+function delete_board(board_id)
+{
+	// Get column order
+	var columns = JSON.parse(localStorage.getItem(board_name + "_col"));
+
+	//Get and create columns
+	for(i in columns)
+	{
+		del_column2(columns[i]);
+	}
+
+	//Remove column list
+	localStorage.removeItem(board_id + "_col");
+
+	//Remove title
+	localStorage.removeItem(board_id + "title");
+
+	//Remove from board list
+	var boards = JSON.parse(localStorage.getItem("board_list"));
+   	var index = boards.indexOf(parseInt(board_id));
+
+    if(index > -1)
+    	boards.splice(index, 1);
+    localStorage.setItem('board_list', JSON.stringify(boards));
+
+    //Remove from last used
+    localStorage.setItem('last_used_board', boards[0]);
+
+    var name = $('.board-selector').find('option[value=' + board_id + ']');
+    name.remove();
+
+    
+    if(boards.length == 0)
+    {
+    	boards[0] = 0;
+    	localStorage.setItem('board_list', JSON.stringify(boards));
+    	localStorage.setItem('last_used_board', 0);
+    	$('#boards').append('<option value="' + 0 +'">' + 'New Board' + ' </option>');
+    	localStorage.setItem(0 + "title", "New Board");
+    }
+
+    $("#question").remove();
+
+    build_board(boards[0]);
+
+}
+
+
+//Builds board
+function build_board(board_id)
+{
+
+
+	//Get board name and add to document
+	board_name = board_id;
+
+	if(localStorage.getItem(board_name + "title") === null)
+	{
+		$("#board-name").html("New Board");
+		$("title").text("New Board - SFK");
+	}
+	else
+	{
+		$("#board-name").html(localStorage.getItem(board_name + "title"));
+		$("title").text(localStorage.getItem(board_name + "title") + " - SFK");
+	}
+
+	// Get column order
+	var columns = JSON.parse(localStorage.getItem(board_name + "_col"));
+
+	//Get and create columns
+	for(i in columns)
+	{
+		var col_name = JSON.parse(localStorage.getItem(board_name + '_'+columns[i]+'_attr'));
+
+		if(col_name == null)
+			continue;
+
+		var order_id = parseInt(i) + 1;
+
+		draw_col(order_id, col_name[0], col_name[1], col_name[2], columns[i]);
+
+		var col_list = JSON.parse(localStorage.getItem(board_name + "_" + columns[i]));
+	
+		//Append list items	
+		var letter = 97;
+	 	for(x in col_list)
+	 	{
+	 		$("#" + columns[i]).append('<li id="'+ columns[i] + '_' + String.fromCharCode(letter) + '" class="card">'+col_list[x]+'</li>')
+	 		letter++;
+	 	}
+	}
+
+	//Refresh Everything
+	refresh_position_ids();
+	refresh_hooks();
+
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+// END OF UPDATE AND HOOK FUNCTIONS
+/////////////////////////////////////////////////////////////////////////////////////
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////
+// UTILITY FUNCTIONS
+/////////////////////////////////////////////////////////////////////////////////////
+
+//Generates Darker Colors
+function LightenDarkenColor(col, amt) {
+	  
+    var usePound = false;
+  
+    if (col[0] == "#") {
+        col = col.slice(1);
+        usePound = true;
+    }
+ 
+    var num = parseInt(col,16);
+ 
+    var r = (num >> 16) + amt;
+ 
+    if (r > 255) r = 255;
+    else if  (r < 0) r = 0;
+ 
+    var b = ((num >> 8) & 0x00FF) + amt;
+ 
+    if (b > 255) b = 255;
+    else if  (b < 0) b = 0;
+ 
+    var g = (num & 0x0000FF) + amt;
+ 
+    if (g > 255) g = 255;
+    else if (g < 0) g = 0;
+ 
+    return (usePound?"#":"") + (g | (b << 8) | (r << 16)).toString(16);
+}
+
+//Changes favicon
+document.head || (document.head = document.getElementsByTagName('head')[0]);
+
+function changeFavicon(src) {
+ var link = document.createElement('link'),
+     oldLink = document.getElementById('dynamic-favicon');
+ link.id = 'dynamic-favicon';
+ link.rel = 'shortcut icon';
+ link.href = src;
+ if (oldLink) {
+  document.head.removeChild(oldLink);
+ }
+ document.head.appendChild(link);
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////
+// END OF UTILITY FUNCTIONS
+/////////////////////////////////////////////////////////////////////////////////////
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////
+// EVENTS LISTENERS
+/////////////////////////////////////////////////////////////////////////////////////
+
+$(function(){
+
+
+//Greyout favicon
+$(window).on("blur", function() {
+	changeFavicon("data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAAB8AAAAgCAYAAADqgqNBAAAAAXNSR0IArs4c6QAAAAlwSFlzAAAN1wAADdcBQiibeAAABCJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IlhNUCBDb3JlIDUuNC4wIj4KICAgPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICAgICAgPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIKICAgICAgICAgICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iCiAgICAgICAgICAgIHhtbG5zOmV4aWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vZXhpZi8xLjAvIgogICAgICAgICAgICB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iCiAgICAgICAgICAgIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyI+CiAgICAgICAgIDx0aWZmOlJlc29sdXRpb25Vbml0PjI8L3RpZmY6UmVzb2x1dGlvblVuaXQ+CiAgICAgICAgIDx0aWZmOkNvbXByZXNzaW9uPjU8L3RpZmY6Q29tcHJlc3Npb24+CiAgICAgICAgIDx0aWZmOlhSZXNvbHV0aW9uPjkwPC90aWZmOlhSZXNvbHV0aW9uPgogICAgICAgICA8dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPgogICAgICAgICA8dGlmZjpZUmVzb2x1dGlvbj45MDwvdGlmZjpZUmVzb2x1dGlvbj4KICAgICAgICAgPGV4aWY6UGl4ZWxYRGltZW5zaW9uPjMxPC9leGlmOlBpeGVsWERpbWVuc2lvbj4KICAgICAgICAgPGV4aWY6Q29sb3JTcGFjZT4xPC9leGlmOkNvbG9yU3BhY2U+CiAgICAgICAgIDxleGlmOlBpeGVsWURpbWVuc2lvbj4zMjwvZXhpZjpQaXhlbFlEaW1lbnNpb24+CiAgICAgICAgIDxkYzpzdWJqZWN0PgogICAgICAgICAgICA8cmRmOlNlcS8+CiAgICAgICAgIDwvZGM6c3ViamVjdD4KICAgICAgICAgPHhtcDpNb2RpZnlEYXRlPjIwMTc6MTE6MDcgMTk6MTE6Mjc8L3htcDpNb2RpZnlEYXRlPgogICAgICAgICA8eG1wOkNyZWF0b3JUb29sPlBpeGVsbWF0b3IgMy43PC94bXA6Q3JlYXRvclRvb2w+CiAgICAgIDwvcmRmOkRlc2NyaXB0aW9uPgogICA8L3JkZjpSREY+CjwveDp4bXBtZXRhPgp3EbFzAAAAdUlEQVRIDe3SsQqAQAwDUHXVXT+nn97P0V1nDUigHVzjklt67RUCjxsj4h4+TmZueDrK84z9s/Ttiv0Fg6sMV+zvpW/XqXXixuFi8DfO7GaXCvjDSbkZZnZKSKvZpdwMMzslpNXsUm6GmZ0S0mp2KTfDfmV/ACB1C/85sXEUAAAAAElFTkSuQmCC");
+});
+
+$(window).on("focus", function() {
+	changeFavicon("data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAAB8AAAAgCAYAAADqgqNBAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAN1wAADdcBQiibeAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAA8SURBVEiJ7c2hDQAgFEPBBssAf/9JQYMACeKa1L3kkmQcXlnXL33f+jr1LQ8Hh8PhcDgcDofD4XD4P/gEuckVbuk/NMQAAAAASUVORK5CYII=");
+})
+
+//Confirm delete board
+$(document).on("click", "#yes", function() {
+
+	delete_board(board_name);
+	$('.board-selector').val("head");
+	deleting = false;
+
+});
+
+//Cancel delete board
+$(document).on("click", "#cancel", function() {
+
+	$("#question").remove();
+	$('.board-selector').val("head");
+	deleting = false;
+
+});
+
+//Switch to board, delete board, create new board
+$(document).on("change", ".board-selector", function() {
+
+	//Get New Board
+	var new_board = $(this).val();
+
+
+	//Create new Board
+	if (new_board == "new")
+	{
+		var boards = JSON.parse(localStorage.getItem("board_list"));
+
+		var new_id = 0;
+		//Lowest possible value 
+	 	for(var i = 0; i < 100; i++)
+	 	{
+	 		if($.inArray(new_id, boards) != -1)
+	 		new_id++;
+	 	}
+
+	 	if(new_id == null)
+	 		new_id = 0;
+
+
+	 	boards.push(new_id);
+
+	 	localStorage.setItem("board_list", JSON.stringify(boards));
+
+	 	new_board = new_id;
+	 	board_name = new_id;
+
+	 	$('#boards').append('<option value="' + new_id +'">' + 'New Board' + ' </option>');
+
+
+	 	localStorage.setItem(board_name + "title", "New Board");
+		$(name[0]).text("New Board");
+	}
+
+	if (new_board == "delete")
+	{
+
+		var board_title_name = localStorage.getItem(board_name + "title");
+		var current_page = $("body").html();
+
+		$("body").html(current_page + '<div id="question"><div class="box">Are you sure you want to delete your "'+ board_title_name + '" board?<br><br><input style="float: left;" type="button" id="cancel" value="Cancel"></input> <input style="float: right;" type="button" id="yes" value="Yes, Delete"></input></div></div>');	
+
+		refresh_hooks();
+
+		deleting = true;
+		return;
+
+
+	}
+
+	if (new_board == "info")
+	{
+
+		var current_page = $("body").html();
+
+		$("body").html( current_page + '<div id="question"><div class="box" style="text-align: left; line-height: 30px;">' + 
+
+			'<h2>Keyboard shortcuts</h2><table style="width: 100%"><tr><td style="font-weight: bold">Select Column</td><td style="text-align: right">1 - 9</td></tr><tr><td style="font-weight: bold">Select list Item</td><td style="text-align: right">a - z</td></tr><tr><td style="font-weight: bold">Move to Column</td><td style="text-align: right">1 - 9</td></tr><tr><td style="font-weight: bold">Cancel Selection</td><td style="text-align: right">Control + I</td></tr><tr><td style="font-weight: bold">Create New</td><td style="text-align: right">Shift + N</td></tr><tr><td style="font-weight: bold">Delete Selection</td><td style="text-align: right">Shift + D</td></tr><tr><td style="font-weight: bold">Edit Selection</td><td style="text-align: right">Shift + E</td></tr></table></div></div>');
+
+		refresh_hooks();
+		deleting = true;
+		return;
+
+
+	}
+
+
+
+	//Clear Current Board
+	$(".sort-master").html('');
+
+	//Build New Board
+	build_board(new_board);
+
+	//Change last used board
+	localStorage.setItem("last_used_board", new_board);
+
+	$(this).val("head");
+
+})
+
+//If clicking away: hide color changer
+$(document).on("click", $, function(e) {
+
+	var this_class = $(e.target).attr("class");
+	var this_id = $(e.target).attr("id");
+
+
+	if(this_class == "color-changer" || this_class == "ht" || this_class == "input_heading")
+		return;
+
+	if(deleting && this_class != "box" && (this_class != "board-selector" && this_id != "logo" ))
+	{
+		$("#question").remove();
+		$('.board-selector').val("head");
+		deleting = false;
+		return;
+	}
+
+
+	if(layer == 2)
+	{
+		un_hilight_col(column_selected);
+		hide_letters(column_selected);
+		hide_numbers();
+		column_selected = 10;
+		layer = 1;
+		return;
+
+	}
+
+	if(layer == 3)
+	{
+		hide_numbers();
+		hide_letters(column_selected);
+		un_hilight_col(column_selected);
+
+		var current_card = $("#" + column_selected + "_" + list_item_selected);
+		current_card.css("background-color", "white");
+		current_card.css("color", "black");
+
+
+		column_selected = 10;
+		list_item_selected = 1;
+		prevent_event = false;
+		new_keyboard = false;
+
+		layer = 1;
+
+		return;
+	}
+
+
+
+
+	$(this).find(".color-changer").css("display", "none");
+
+})
+
+//Now changing color
+$(document).on("click", ".color-changer", function (){
+
+	changing_color = true;
+
+})
+
+//Color changing ended
+$(document).on("blur", ".color-changer", function (){
+
+	changing_color = false;
+
+})
+
+//Editing Add New Field
+$(document).on("focus",'.input_new', function(){
+	$(this).attr("placeholder", "");
+	editing_text = true;
+});
+
+//End editing New Field
+ $(document).on("focusout",'.input_new',function(){
+	$(this).attr("placeholder", " + New Item");
+	editing_text = false;
+	refresh_position_ids();
+});
+
+//Editing Board Name
+ $(document).on("click","#board-name",function(){
+ 	var title = $(this).text();
+ 	$("#title-string").val(title);
+ 	var width = $('#board-name').css("width");
+ 	$("#title-string").css("display", "inline");
+ 	$("#title-string").css("width", 200);
+ 	$("#board-name").css("display","none");
+ 	$('#logo').css("visibility", "hidden");
+ 	$("#title-string").focus();
+
+ 	editing_text = true;
+ });
+
+$(document).on('click','#logo',function(){
+
+
+	var current_page = $("body").html();
+
+	$('body').html(current_page + '<div id="question"><div class="box"><h2>SFKBoard</h2>Version 1.0 by DG</div></div>');
+
+	refresh_hooks();
+
+	deleting = true;
+});
+
+//Keyboard shortcut enter after editing Board name
+ $('#title-string').keypress(function(e) {
+
+	if(e.which == 13)
+	{
+		var txtNewItem = $(this).val();
+		
+ 	}
+
+ 	if((e.which == cancel_this || e.which == cancel_this_2) && e.ctrlKey)
+ 	{
+ 		var txtNewItem = localStorage.getItem(board_name + 'title')
+
+
+ 	}
+
+	if(e.which == 13 || (e.which == cancel_this || e.which == cancel_this_2) && e.ctrlKey)
+	{
+ 	$('#board-name').html(txtNewItem);
+	$('title').text(txtNewItem + " - SFK");
+	localStorage.setItem(board_name + 'title',txtNewItem);	
+	$("#title-string").css("display", "none");
+ 	$("#board-name").css("display","inline");
+ 	$('#logo').css("visibility", "visible");
+	var name = $('.board-selector').find('option[value=' + board_name + ']');
+	$(name[0]).text(txtNewItem);
+
+ 	editing_text = false;
+
+ 	return;
+ 	}
+
+
+	
+	});
+
+//Clicking away and end of editing board name
+ $(document).on('focusout','#title-string',function(){
+ 	
+	var txtNewItem = $(this).val();
+	$('#board-name').html(txtNewItem);
+	$('title').text(txtNewItem + " - SFK");
+
+	localStorage.setItem(board_name + 'title',txtNewItem);
+	
+	$("#title-string").css("display", "none");
+ 	$("#board-name").css("display","inline");
+ 	$('#logo').css("visibility", "visible");
+
+ 	var name = $('.board-selector').find('option[value=' + board_name + ']');
+	$(name[0]).text(txtNewItem);
+
+ 	editing_text = false;	
+});
+
+
+ //Listens for "Add Column" botton
+ $(document).on('click', '.add-button', function() {add_new_column();});
+
+//Clicking on card
+$(document).on('click', '.card', function(e) {
+
+	if(($(":focus").parent().attr("id") == $(e.target).attr("id")))
+	{
+		return;
+	}
+
+	if($(":focus").parent().is("li") && $(e.target).is("li") )
+	{
+
+	}
+	else if (editing_text)
+		return;
+
+	var item_text = $(this).text();
+	var height = parseInt($(this).css("height")) + 30;
+
+
+	$(this).html('<textarea style="padding: 0px; resize: none" class="input_card" type="text" id="new_text2" value="" placeholder="">')
+
+	$(this).find(".input_card").val(item_text);
+	$(this).find(".input_card").css("height", height);
+	$(this).find(".input_card").focus();
+	$(this).find(".input_card").select();
+
+
+	refresh_hooks();
+	editing_text = true;
+
+});
+
+//Deals with enter keys
+$(document).on('keypress',function(e){
+
+
+	if(e.which == 13 && e.target.className == "input_card")
+	{
+		var txtNewItem = $(document.activeElement).val();
+
+		if(txtNewItem == "")
+			return;
+
+		var to_update = $(document.activeElement).closest("ul").attr("id");
+
+		$(document.activeElement).parent().text(txtNewItem);
+
+		update_col(to_update);
+
+		editing_text = false;
+		return;
+	}
+
+
+	if(e.which == 13 && e.target.className == "input_new")
+	{
+		var txtNewItem = $(document.activeElement).val();
+
+		if(txtNewItem == "")
+			return;
+
+		$(document.activeElement).closest('div.container').find('ul').append('<li class="card">'+txtNewItem+'</li>');
+		$('.input_new').val("");
+
+		update_col($(document.activeElement).closest('div.container').find('ul').attr("id"));
+		refresh_hooks();
+		return;
+	}
+
+	if(e.target.className == "input_card")
+	{
+		e.target.style.height = "5px";
+		e.target.style.height = (e.target.scrollHeight)+"px";
+	}
+
+});
+
+//End of editing list item
+$(document).on('focusout', '.input_card', function(){
+	
+	var txtNewItem = $(this).val();
+	var to_update = $(this).closest("ul").attr("id");
+
+	$(this).parent().text(txtNewItem);
+	update_col(to_update);
+
+	editing_text = false;
+
+});
+
+
+//When clicking on heading
+$(document).on('click', '.ht', function()
+{
+
+	if(editing_text == true)
+		return;
+
+	var item_text = $(this).text();
+	var curr_id = $(this).parent().find("ul").attr("id") + "heading";
+	$(this).html('<input style="padding: 0px; margin: 0px;" class="input_heading" type="text" id="' + curr_id + '" value="" placeholder="">')
+	$(this).find(".input_heading").val(item_text);
+	$(this).find(".input_heading").focus();
+	$(this).next().css("display", "inline");
+	$(this).next().css("background-color", $(this).next().attr("value"));
+
+	editing_text = true;
+});
+
+//When focusing out of a heading
+$(document).on('focusout', '.input_heading', function(e){
+
+	var txtNewItem = $(this).val();
+
+	if(txtNewItem == "")
+	{
+		$(this).focus();
+		return;
+	}
+
+	var attribute_list = JSON.parse(localStorage.getItem(board_name + '_' + e.target.id[0] + '_attr'));
+	attribute_list[0] = txtNewItem;
+	localStorage.setItem((board_name + '_' + e.target.id[0]+ '_attr'),JSON.stringify(attribute_list));
+
+
+	$(this).parent().html(txtNewItem);
+	editing_text = false;
+});
+
+//Deals with keyboard into heading
+$(document).on('keypress', function(e) {
+
+	if(e.which == 13 && e.target.className == "input_heading")
+	{
+
+		var txtNewItem  = $(document.activeElement).val();
+
+		$(document.activeElement).parent().next().css("display","none");
+
+		if(txtNewItem == "")
+			return;
+
+		var attribute_list = JSON.parse(localStorage.getItem(board_name + '_' + e.target.id[0] + '_attr'));
+		
+		attribute_list[0] = txtNewItem;
+		localStorage.setItem(board_name + '_' + e.target.id[0]+ '_attr',JSON.stringify(attribute_list));
+		
+		$('#' + e.target.id).parent().html(txtNewItem);
+		$('#' + e.target.id).next().css("visibility", "hidden");
+
+		editing_text = false;
+
+		return;
+
+	}
+
+	if (e.target.className == "input_heading")
+	{
+		var txtNewItem  = $(document.activeElement).val();
+		var selection = window.getSelection();
+		if(txtNewItem.length > 16 && selection.toString() === "")
+			return false;
+	}
+});
+
+});
+
+/////////////////////////////////////////////////////////////////////////////////////
+// END OF MISC EVENTS
+/////////////////////////////////////////////////////////////////////////////////////
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////
+// ON DOCUMENT READY
+/////////////////////////////////////////////////////////////////////////////////////
+
+//When the page loads, read information from storage, add elements, refresh hooks
+$(document).ready(function(){
+	
+
+	//Get list of boards
+	board_list = JSON.parse(localStorage.getItem("board_list"));
+
+	//If no boards in memory
+	if(board_list == null)
+	{
+		board_list = JSON.parse('[0]');
+		localStorage.setItem('board_list', '[0]');
+	}
+
+	//Add boards to dropdown
+	for( i in board_list)
+	{
+		var board_title = localStorage.getItem(board_list[i] + "title");
+
+		if(board_title == null)
+			board_title = "New Board";
+
+		$("#boards").append('<option value="' + board_list[i] +'">' + board_title + ' </option>');
+	}
+
+	//Get last used board
+	board_name = localStorage.getItem("last_used_board");
+	if(board_name == null)
+	{
+		board_name = 0;
+		localStorage.setItem("last_used_board", 0);
+	}
+
+
+	//Constuct board objects
+	build_board(board_name);
+
+	//Set favicon
+	changeFavicon("data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAAB8AAAAgCAYAAADqgqNBAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAN1wAADdcBQiibeAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAA8SURBVEiJ7c2hDQAgFEPBBssAf/9JQYMACeKa1L3kkmQcXlnXL33f+jr1LQ8Hh8PhcDgcDofD4XD4P/gEuckVbuk/NMQAAAAASUVORK5CYII=");
+
+	})
+
+/////////////////////////////////////////////////////////////////////////////////////
+// END OF DOCUMENT READY
+/////////////////////////////////////////////////////////////////////////////////////
+	 </script> 
+</head>
+
+
+
+	<!-- Create Body -->
+	<body>
+		<div id="top">
+			<b id="board-name"></b>
+			<input type="text" id="title-string" value="" placeholder="Enter Board Name..."/>
+			<div id="logo">SFKBoard</div>
+			<select name="board_selector" value="Hello" class="board-selector">
+				<option value="head" id="heading" selected disabled>
+									
+				Board...
+				</option>
+				<optgroup id="commands" label="Actions">
+					<option value="new">New</option>
+					<option value="delete">Delete</option>
+					<option value="info">View Shortcuts</option>
+
+				</optgroup>
+
+				<optgroup id="boards" label="Switch to">
+
+
+				</optgroup>
+
+
+				
+
+			</select>
+			<input type="button" name="btnAddNew" value="Add Column" class="add-button"/>
+		</div>
+		<div id="top2"><b>Delete</b>
+		</div>
+		<div class="sort-master">
+		</div>
+	</body>
+</html>
